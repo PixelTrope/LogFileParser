@@ -1,0 +1,15 @@
+D:\Developer2022\CS\Projects\LogFileParser\bin\Debug\net6.0\LogFileParser.exe
+D:\Developer2022\CS\Projects\LogFileParser\bin\Debug\net6.0\LogFileParser.deps.json
+D:\Developer2022\CS\Projects\LogFileParser\bin\Debug\net6.0\LogFileParser.runtimeconfig.json
+D:\Developer2022\CS\Projects\LogFileParser\bin\Debug\net6.0\LogFileParser.dll
+D:\Developer2022\CS\Projects\LogFileParser\bin\Debug\net6.0\LogFileParser.pdb
+D:\Developer2022\CS\Projects\LogFileParser\obj\Debug\net6.0\LogFileParser.csproj.AssemblyReference.cache
+D:\Developer2022\CS\Projects\LogFileParser\obj\Debug\net6.0\LogFileParser.GeneratedMSBuildEditorConfig.editorconfig
+D:\Developer2022\CS\Projects\LogFileParser\obj\Debug\net6.0\LogFileParser.AssemblyInfoInputs.cache
+D:\Developer2022\CS\Projects\LogFileParser\obj\Debug\net6.0\LogFileParser.AssemblyInfo.cs
+D:\Developer2022\CS\Projects\LogFileParser\obj\Debug\net6.0\LogFileParser.csproj.CoreCompileInputs.cache
+D:\Developer2022\CS\Projects\LogFileParser\obj\Debug\net6.0\LogFileParser.dll
+D:\Developer2022\CS\Projects\LogFileParser\obj\Debug\net6.0\refint\LogFileParser.dll
+D:\Developer2022\CS\Projects\LogFileParser\obj\Debug\net6.0\LogFileParser.pdb
+D:\Developer2022\CS\Projects\LogFileParser\obj\Debug\net6.0\LogFileParser.genruntimeconfig.cache
+D:\Developer2022\CS\Projects\LogFileParser\obj\Debug\net6.0\ref\LogFileParser.dll
