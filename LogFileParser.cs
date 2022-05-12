@@ -10,7 +10,8 @@ namespace Text_Parsers
         {
             List<string> list = new List<string>();
             List<string> outp = new List<string>();
-            // variable names '?line' refer to strings containing a line of text
+
+            // variable names '?line' refer to strings containing a line or line substring of text
             string line; // input line
             string aline; // next line for logical operations
             string mline; // next-next line for logical operations
@@ -41,12 +42,12 @@ namespace Text_Parsers
             string CMD_out; // command line to shell
 
             // Read file into list lines
-            Console.WriteLine("Reading INI file...");
+            Console.WriteLine("Reading INI file..." + FN_ini);
             using (StreamReader reader = new StreamReader(FN_ini))
             {
                 while ((line = reader.ReadLine()) != null)
                 {
-                    list.Add(line.ToUpper());
+                    list.Add(line);
                 } //while
                 reader.Close();
                 Console.WriteLine("Read INI file.");
@@ -57,7 +58,7 @@ namespace Text_Parsers
             Console.WriteLine("Parsing INI list.");
             while (ii < list.Count)
             {
-                line = list[ii];
+                line = list[ii].ToUpper();
                 Console.Write(line);
                 if (line.Contains("="))
                 {
