@@ -42,60 +42,66 @@ namespace Text_Parsers
             string CMD_out; // command line to shell
 
             // Read file into list lines
-            Console.WriteLine("Reading INI file..." + FN_ini);
+            Console.WriteLine("Reading INI file " + FN_ini);
+
             using (StreamReader reader = new StreamReader(FN_ini))
             {
                 while ((line = reader.ReadLine()) != null)
                 {
                     list.Add(line);
+                    Console.WriteLine(line);
                 } //while
                 reader.Close();
                 Console.WriteLine("Read INI file.");
             }// Using
 
-            // Parse INI lines; assign values
-            ii = 0;
-            Console.WriteLine("Parsing INI list.");
-            while (ii < list.Count)
-            {
-                line = list[ii].ToUpper();
-                Console.Write(line);
-                if (line.Contains("="))
-                {
-                    llen = line.Length;
-                    lepos = line.IndexOf('=') + 1;
-                    p1 = line.Substring(0, lepos);
-                    p1 = p1.Trim(' ');
-                    p2 = line.Substring(lepos, allen - lepos);
-                    p2 = p2.Trim(' ');
-                    switch (p1)
-                    {
-                        case "INPUTLOGPATH":
-                            FP_log_in = p2;
-                            break;
-                        case "OUTPUTLOGPATH":
-                            FPN_log_out = p2;
-                            break;
-                        case "RSI_HANDLE":
-                            FN_log_in = p2;
-                            break;
-                        case "CHATLOGNUMLINESBEFOREFLUSH":
-                            //
-                            break;
-                        case "READ_DELAY":
-                            read_delay = float.Parse(p2);
-                            break;
-                        case "ACT_DELAY":
-                            act_delay = float.Parse(p2);
-                            break;
-                        case "WAIT_DELAY":
-                            wait_delay = float.Parse(p2);
-                            break;
-                    }
-                    FPN_log_in = FP_log_in + FN_log_in + ".log";
-                    FPN_log_out = FPN_log_out + DateTime.Now.ToString("yyyy’-‘MM’-‘dd’T’HH’-’mm’-’ss_fffffffK") + "-LogFileParser.log";
-                }
-            } //while
+            /*
+
+                         // Parse INI lines; assign values
+                        ii = 0;
+                        Console.WriteLine("Parsing INI list.");
+                        while (ii < list.Count)
+                        {
+                            line = list[ii].ToUpper();
+                            Console.Write(line);
+                            if (line.Contains("="))
+                            {
+                                llen = line.Length;
+                                lepos = line.IndexOf('=') + 1;
+                                p1 = line.Substring(0, lepos);
+                                p1 = p1.Trim(' ');
+                                p2 = line.Substring(lepos, allen - lepos);
+                                p2 = p2.Trim(' ');
+                                switch (p1)
+                                {
+                                    case "INPUTLOGPATH":
+                                        FP_log_in = p2;
+                                        break;
+                                    case "OUTPUTLOGPATH":
+                                        FPN_log_out = p2;
+                                        break;
+                                    case "RSI_HANDLE":
+                                        FN_log_in = p2;
+                                        break;
+                                    case "CHATLOGNUMLINESBEFOREFLUSH":
+                                        //
+                                        break;
+                                    case "READ_DELAY":
+                                        read_delay = float.Parse(p2);
+                                        break;
+                                    case "ACT_DELAY":
+                                        act_delay = float.Parse(p2);
+                                        break;
+                                    case "WAIT_DELAY":
+                                        wait_delay = float.Parse(p2);
+                                        break;
+                                } // switch
+                                FPN_log_in = FP_log_in + FN_log_in + ".log";
+                                FPN_log_out = FPN_log_out + DateTime.Now.ToString("yyyy’-‘MM’-‘dd’T’HH’-’mm’-’ss_fffffffK") + "-LogFileParser.log";
+                            } // if contains "="
+                        } //while
+            */
+
         } //public
     } //class
 } //namespace
