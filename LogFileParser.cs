@@ -56,8 +56,6 @@ namespace Text_Parsers
                 Console.WriteLine("Read INI file.");
             }// Using
 
-            // debug checkpoint
-
             // Parse INI lines; assign values
             ii = 0;
             Console.WriteLine("Parsing INI list.");
@@ -73,36 +71,30 @@ namespace Text_Parsers
                     p1 = p1.Trim(' ');
                     p2 = aline.Substring(alepos + 1, allen - alepos - 1);
                     p2 = p2.Trim(' ');
+                    p2 = p2.Trim('"');
                     // Console.WriteLine(p1, p2);
                     switch (p1)
                     {
                         case "INPUTLOGPATH":
                             FP_log_in = p2;
-                            // Console.WriteLine(FP_log_in);
                             break;
                         case "OUTPUTLOGPATH":
                             FPN_log_out = p2;
-                            // Console.WriteLine(FPN_log_out);
                             break;
                         case "RSI_HANDLE":
                             FN_log_in = p2;
-                            // Console.WriteLine(FN_log_in);
                             break;
                         case "CHATLOGNUMLINESBEFOREFLUSH":
                             line_control = int.Parse(p2);
-                            // Console.WriteLine(line_control);
                             break;
                         case "READ_DELAY":
                             read_delay = float.Parse(p2);
-                            // Console.WriteLine(read_delay);
                             break;
                         case "ACT_DELAY":
                             act_delay = float.Parse(p2);
-                            // Console.WriteLine(act_delay);
                             break;
                         case "WAIT_DELAY":
                             wait_delay = float.Parse(p2);
-                            // Console.WriteLine(wait_delay);
                             break;
                     } // switch
                 } // if contains "="
@@ -110,7 +102,7 @@ namespace Text_Parsers
             } //while
             // Console.WriteLine("{0} {1} {2} {3} {4} {5} {6}", FP_log_in, FPN_log_out, FN_log_in, line_control, read_delay, act_delay, wait_delay);
             FPN_log_in = FP_log_in + FN_log_in + ".log";
-            FPN_log_out = FPN_log_out + DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss_fffffffK") + "-LogFileParser.log";
+            FPN_log_out = FPN_log_out + DateTime.Now.ToString("yyyy-MM-ddTHH`mm`ss") + "-LogFileParser.log";
             Console.WriteLine("Log In: {0}\nLog Out: {1}", FPN_log_in, FPN_log_out);
         } //public
     } //class
