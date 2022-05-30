@@ -6,105 +6,144 @@ namespace Text_Parsers
 {
     class MainClass
     {
+        List<string> list = new List<string>();
+        List<string> outp = new List<string>();
+
+        // variable names '?line' refer to strings containing a line or line substring of text
+        string line; // input line
+        string aline; // next line for logical operations
+        string mline; // next-next line for logical operations
+        string p1; // substring (part 1)
+        string p2; // substring (part 2)
+        string oline; // output line
+
+        // FN as in File Name, FP as in File Path, FPN as in File Path & Name
+        static string FN_ini = "LogFileParser.ini"; // Path defaults to app folder
+        string FN_log_in = " "; // File Name of active log to parse, built from RSI name, read from INI file
+        string FP_log_in = " "; // File Path of active log to parse, read from INI file
+        string FPN_log_in = " "; // Full File Path & name of active log to parse
+        static string FPN_log_out = " "; // Full File Path & name of this app's runtime log
+        string CMD_out = " "; // command line to shell
+
+        int ii = 0; // list index integer
+        int llen = 0; // length of line
+        int allen = 0; // length of aline
+        int mllen = 0; // length of mline
+        int lepos = 0; // position of substring in line
+        int alepos = 0; // position of substring in aline
+        int mlepos = 0; // position of substring in mline
+        int line_control = 1; // number of lines before flush to input log file
+
+        float read_delay = 1; // timing in decimal seconds for input synching
+        float act_delay = 0; // timing in decimal seconds for processing synching
+        float wait_delay = 0; // timing in decimal seconds for output synching
+
+        // bool validRecord = true; // flag for logical operations
+        bool exit_local = false;
+        bool exit_global = false;
+
         public static void Main(string[] args)
         {
-            List<string> list = new List<string>();
-            List<string> outp = new List<string>();
-
-            // variable names '?line' refer to strings containing a line or line substring of text
-            string line; // input line
-            string aline; // next line for logical operations
-            string mline; // next-next line for logical operations
-            string p1; // substring (part 1)
-            string p2; // substring (part 2)
-            string oline; // output line
-
-            // FN as in File Name, FP as in File Path, FPN as in File Path & Name
-            string FN_ini = "LogFileParser.ini"; // Path defaults to app folder
-            string FN_log_in = ""; // File Name of active log to parse, built from RSI name, read from INI file
-            string FP_log_in = ""; // File Path of active log to parse, read from INI file
-            string FPN_log_in = ""; // Full File Path & name of active log to parse
-            string FPN_log_out = ""; // Full File Path & name of this app's runtime log
-            string CMD_out = ""; // command line to shell
-
-            int ii = 0; // list index integer
-            int llen = 0; // length of line
-            int allen = 0; // length of aline
-            int mllen = 0; // length of mline
-            int lepos = 0; // position of substring in line
-            int alepos = 0; // position of substring in aline
-            int mlepos = 0; // position of substring in mline
-            int line_control = 1; // number of lines before flush
-
-            float read_delay = 0; // timing in decimal seconds for input synching
-            float act_delay = 0; // timing in decimal seconds for processing synching
-            float wait_delay = 0; // timing in decimal seconds for output synching
-
-            bool validRecord = false; // flag for logical operations
-
-            // Read file into list lines
-            Console.WriteLine("Reading INI file " + FN_ini);
-
-            using (StreamReader reader = new StreamReader(FN_ini))
+            Console.WriteLine("Parsing Log File Parser INI file " + FN_ini);
+            MainClass parse = new MainClass();
+            parse.INI(FN_ini);
+            while (!parse.exit_global)
             {
+                parse.exit_global = parse.LOGIN(parse.FPN_log_in);
+                parse.LOGOUT(FPN_log_out); // exit log write
+            }
+        }
+        // Read file into list lines
+        public void INI(string FN)
+        {
+            using (StreamReader reader = new StreamReader(FN))
+            {
+                // Parse INI lines; assign values
+                Console.WriteLine("Parsing INI list.");
                 while ((line = reader.ReadLine()) != null)
                 {
-                    list.Add(line);
-                    // Console.WriteLine(line);
+                    aline = line.ToUpper();
+                    // Console.WriteLine(aline);
+                    if (aline.Contains("="))
+                    {
+                        //replace all these lines with string split function
+                        allen = aline.Length;
+                        alepos = aline.IndexOf('=');
+                        p1 = aline.Substring(0, alepos);
+                        p1 = p1.Trim(' ');
+                        p2 = aline.Substring(alepos + 1, allen - alepos - 1);
+                        p2 = p2.Trim(' ');
+                        p2 = p2.Trim('"');
+                        // Console.WriteLine(p1, p2);
+                        switch (p1)
+                        {
+                            case "INPUTLOGPATH":
+                                FP_log_in = p2;
+                                break;
+                            case "OUTPUTLOGPATH":
+                                FPN_log_out = p2;
+                                break;
+                            case "RSI_HANDLE":
+                                FN_log_in = p2;
+                                break;
+                            case "CHATLOGNUMLINESBEFOREFLUSH":
+                                line_control = int.Parse(p2);
+                                break;
+                            case "READ_DELAY":
+                                read_delay = float.Parse(p2);
+                                break;
+                            case "ACT_DELAY":
+                                act_delay = float.Parse(p2);
+                                break;
+                            case "WAIT_DELAY":
+                                wait_delay = float.Parse(p2);
+                                break;
+                        } // switch
+                    } // if contains "="
                 } //while
+                FPN_log_in = FP_log_in + FN_log_in + ".log";
+                FPN_log_out = FPN_log_out + DateTime.Now.ToString("yyyy-MM-ddTHH`mm`ss") + "-LogFileParser.log";
                 reader.Close();
                 Console.WriteLine("Read INI file.");
             }// Using
-
-            // Parse INI lines; assign values
-            ii = 0;
-            Console.WriteLine("Parsing INI list.");
-            while (ii < list.Count)
-            {
-                aline = list[ii].ToUpper();
-                // Console.WriteLine(aline);
-                if (aline.Contains("="))
-                {
-                    allen = aline.Length;
-                    alepos = aline.IndexOf('=');
-                    p1 = aline.Substring(0, alepos);
-                    p1 = p1.Trim(' ');
-                    p2 = aline.Substring(alepos + 1, allen - alepos - 1);
-                    p2 = p2.Trim(' ');
-                    p2 = p2.Trim('"');
-                    // Console.WriteLine(p1, p2);
-                    switch (p1)
-                    {
-                        case "INPUTLOGPATH":
-                            FP_log_in = p2;
-                            break;
-                        case "OUTPUTLOGPATH":
-                            FPN_log_out = p2;
-                            break;
-                        case "RSI_HANDLE":
-                            FN_log_in = p2;
-                            break;
-                        case "CHATLOGNUMLINESBEFOREFLUSH":
-                            line_control = int.Parse(p2);
-                            break;
-                        case "READ_DELAY":
-                            read_delay = float.Parse(p2);
-                            break;
-                        case "ACT_DELAY":
-                            act_delay = float.Parse(p2);
-                            break;
-                        case "WAIT_DELAY":
-                            wait_delay = float.Parse(p2);
-                            break;
-                    } // switch
-                } // if contains "="
-                ii++;
-            } //while
-            // Console.WriteLine("{0} {1} {2} {3} {4} {5} {6}", FP_log_in, FPN_log_out, FN_log_in, line_control, read_delay, act_delay, wait_delay);
-            FPN_log_in = FP_log_in + FN_log_in + ".log";
-            FPN_log_out = FPN_log_out + DateTime.Now.ToString("yyyy-MM-ddTHH`mm`ss") + "-LogFileParser.log";
-            Console.WriteLine("Log In: {0}\nLog Out: {1}", FPN_log_in, FPN_log_out);
         } //public
+
+        public bool LOGIN(string FN)
+        {
+            bool onexit = false;
+
+            // Note the FileShare.ReadWrite, allowing others to modify the file
+            FN = Environment.ExpandEnvironmentVariables(FN);
+            using (FileStream fileStream = File.Open(FN, FileMode.Open,
+                FileAccess.Read, FileShare.ReadWrite))
+            {
+                fileStream.Seek(0, SeekOrigin.End);
+                using (StreamReader streamReader = new StreamReader(fileStream))
+                {
+                    while (!onexit)
+                    {
+                        Thread.Sleep(TimeSpan.FromSeconds(read_delay));
+                        line = streamReader.ReadToEnd();
+                        // find in line block for Environment.NewLine each line
+                        Console.Out.Write(line);
+                        if (line.Contains("Exit!"))
+                        {
+                            onexit = true;
+                        }
+
+                        // onexit = true; in logic or infinite loop
+                    }
+                }
+            }
+            return onexit;
+        }
+
+        public void LOGOUT(string FN)
+        {
+            Console.WriteLine("{0} {1} {2} {3} {4} {5} {6}", FP_log_in, FPN_log_out, FN_log_in, line_control, read_delay, act_delay, wait_delay);
+            Console.WriteLine("Log In: {0}\nLog Out: {1}", FPN_log_in, FPN_log_out);
+        }
+
     } //class
 } //namespace
 
@@ -163,4 +202,7 @@ namespace Text_Parsers
             Console.WriteLine("Done!");
         } //using
 
-        */
+                    list.Add(line);
+                    // Console.WriteLine(line);
+
+                        */
