@@ -16,13 +16,16 @@ namespace Text_Parsers
         string p1; // substring (part 1)
         string p2; // substring (part 2)
         string oline; // output line
+        string[] cut = { " ", " " };
 
         // FN as in File Name, FP as in File Path, FPN as in File Path & Name
         static string FN_ini = "LogFileParser.ini"; // Path defaults to app folder
+        static string FPN_log_out = " "; // Full File Path & name of this app's runtime log
         string FN_log_in = " "; // File Name of active log to parse, built from RSI name, read from INI file
         string FP_log_in = " "; // File Path of active log to parse, read from INI file
         string FPN_log_in = " "; // Full File Path & name of active log to parse
-        static string FPN_log_out = " "; // Full File Path & name of this app's runtime log
+        string FPN_audio_player = " ";
+        string[] FP_sound_board = { " ", " ", " " };
         string CMD_out = " "; // command line to shell
 
         int ii = 0; // list index integer
@@ -44,16 +47,24 @@ namespace Text_Parsers
 
         public static void Main(string[] args)
         {
-            Console.WriteLine("Parsing Log File Parser INI file " + FN_ini);
             MainClass parse = new MainClass();
-            parse.INI(FN_ini);
+            if (parse.Exists(FN_ini))
+            {
+                Console.WriteLine("Parsing Log File Parser INI file " + FN_ini);
+                parse.INI(FN_ini);
+            }
+            else
+            {
+                Console.WriteLine(FN_ini + " is missing from the application folder.");
+                parse.exit_global = true;
+            }
             while (!parse.exit_global)
             {
                 parse.exit_global = parse.LOGIN(parse.FPN_log_in);
                 parse.LOGOUT(FPN_log_out); // exit log write
             }
-        }
-        // Read file into list lines
+        } //Main
+
         public void INI(string FN)
         {
             using (StreamReader reader = new StreamReader(FN))
@@ -66,25 +77,33 @@ namespace Text_Parsers
                     // Console.WriteLine(aline);
                     if (aline.Contains("="))
                     {
-                        //replace all these lines with string split function
-                        allen = aline.Length;
-                        alepos = aline.IndexOf('=');
-                        p1 = aline.Substring(0, alepos);
-                        p1 = p1.Trim(' ');
-                        p2 = aline.Substring(alepos + 1, allen - alepos - 1);
-                        p2 = p2.Trim(' ');
+                        string[] cut = aline.Split("=", System.StringSplitOptions.TrimEntries);
+                        p1 = cut[0];
+                        p2 = cut[1];
                         p2 = p2.Trim('"');
-                        // Console.WriteLine(p1, p2);
+                        Console.WriteLine("{0}, {1}", p1, p2);
                         switch (p1)
                         {
                             case "INPUTLOGPATH":
-                                FP_log_in = p2;
+                                FP_log_in = Environment.ExpandEnvironmentVariables(p2);
                                 break;
                             case "OUTPUTLOGPATH":
-                                FPN_log_out = p2;
+                                FPN_log_out = Environment.ExpandEnvironmentVariables(p2);
+                                break;
+                            case "AUDIOPLAYEREXEPATH":
+                                FPN_audio_player = Environment.ExpandEnvironmentVariables(p2);
+                                break;
+                            case "SOUNDBOARDPATH00":
+                                FP_sound_board[0] = Environment.ExpandEnvironmentVariables(p2);
+                                break;
+                            case "SOUNDBOARDPATH01":
+                                FP_sound_board[1] = Environment.ExpandEnvironmentVariables(p2);
+                                break;
+                            case "SOUNDBOARDPATH02":
+                                FP_sound_board[2] = Environment.ExpandEnvironmentVariables(p2);
                                 break;
                             case "RSI_HANDLE":
-                                FN_log_in = p2;
+                                FN_log_in = p2 + ".log";
                                 break;
                             case "CHATLOGNUMLINESBEFOREFLUSH":
                                 line_control = int.Parse(p2);
@@ -101,19 +120,24 @@ namespace Text_Parsers
                         } // switch
                     } // if contains "="
                 } //while
-                FPN_log_in = FP_log_in + FN_log_in + ".log";
-                FPN_log_out = FPN_log_out + DateTime.Now.ToString("yyyy-MM-ddTHH`mm`ss") + "-LogFileParser.log";
+                FPN_log_in = FP_log_in + FN_log_in;
+                FPN_log_out = FPN_log_out + DateTime.Now.ToString("yyyy-MM-dd_THH`mm`ss") + "-LogFileParser.log";
                 reader.Close();
                 Console.WriteLine("Read INI file.");
             }// Using
-        } //public
+        } // INI
+
+        public bool Exists(string FPN)
+        {
+            Console.WriteLine("{0} {1}", "Checking for file:", FPN);
+            return File.Exists(FPN);
+        } // Exists
 
         public bool LOGIN(string FN)
         {
             bool onexit = false;
 
-            // Note the FileShare.ReadWrite, allowing others to modify the file
-            FN = Environment.ExpandEnvironmentVariables(FN);
+            // Note the FileShare.ReadWrite, allowing the emulator to modify the file
             using (FileStream fileStream = File.Open(FN, FileMode.Open,
                 FileAccess.Read, FileShare.ReadWrite))
             {
@@ -126,28 +150,32 @@ namespace Text_Parsers
                         line = streamReader.ReadToEnd();
                         // find in line block for Environment.NewLine each line
                         Console.Out.Write(line);
-                        if (line.Contains("Exit!"))
+                        if (line.Contains("SB0P"))
+                        {
+                            System.Diagnostics.Process.Start('"' + FPN_audio_player + '"' + " " + '"' + "Y:\\PixelTrope2022\\Resources\\Audio\\MxO_Emu\\MxO_Edits\\Soundboards\\Agent Gray\\I_Am_Agent_Gray.wav" + '"');
+                        }
+                        if (line.Contains("!Exit!"))
                         {
                             onexit = true;
                         }
-
-                        // onexit = true; in logic or infinite loop
                     }
                 }
             }
             return onexit;
-        }
+        } // LOG IN
 
         public void LOGOUT(string FN)
         {
             Console.WriteLine("{0} {1} {2} {3} {4} {5} {6}", FP_log_in, FPN_log_out, FN_log_in, line_control, read_delay, act_delay, wait_delay);
             Console.WriteLine("Log In: {0}\nLog Out: {1}", FPN_log_in, FPN_log_out);
-        }
+        }  // LOG OUT
 
     } //class
 } //namespace
 
-/* code from previous application for harvesting
+/*
+ code from previous application for harvesting
+
                 if (String.Equals(line, "\t\tVESSEL"))
                 {
                     validRecord = false;
@@ -202,7 +230,5 @@ namespace Text_Parsers
             Console.WriteLine("Done!");
         } //using
 
-                    list.Add(line);
-                    // Console.WriteLine(line);
-
-                        */
+        list.Add(line);
+*/
