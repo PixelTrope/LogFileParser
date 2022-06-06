@@ -10,12 +10,12 @@ namespace Text_Parsers
         List<string> outp = new List<string>();
 
         // variable names '?line' refer to strings containing a line or line substring of text
-        string line; // input line
-        string aline; // next line for logical operations
-        string mline; // next-next line for logical operations
-        string p1; // substring (part 1)
-        string p2; // substring (part 2)
-        string oline; // output line
+        string line = " "; // input line
+        string aline = " "; // next line for logical operations
+        string mline = " "; // next-next line for logical operations
+        string p1 = " "; // substring (part 1)
+        string p2 = " "; // substring (part 2)
+        string oline = " "; // output line
         string[] cut = { " ", " " };
 
         // FN as in File Name, FP as in File Path, FPN as in File Path & Name
@@ -48,7 +48,7 @@ namespace Text_Parsers
         public static void Main(string[] args)
         {
             MainClass parse = new MainClass();
-            if (parse.Exists(FN_ini))
+            if (parse.FEXISTS(FN_ini))
             {
                 Console.WriteLine("Parsing Log File Parser INI file " + FN_ini);
                 parse.INI(FN_ini);
@@ -60,6 +60,7 @@ namespace Text_Parsers
             }
             while (!parse.exit_global)
             {
+                parse.BUILDSOUNDBOARD("C:\\ESD\\");
                 parse.exit_global = parse.LOGIN(parse.FPN_log_in);
                 parse.LOGOUT(FPN_log_out); // exit log write
             }
@@ -127,10 +128,16 @@ namespace Text_Parsers
             }// Using
         } // INI
 
-        public bool Exists(string FPN)
+        public bool FEXISTS(string FPN)
         {
             Console.WriteLine("{0} {1}", "Checking for file:", FPN);
             return File.Exists(FPN);
+        } // Exists
+
+        public bool DEXISTS(string FPN)
+        {
+            Console.WriteLine("{0} {1}", "Checking for Folder:", FPN);
+            return Directory.Exists(FPN);
         } // Exists
 
         public bool LOGIN(string FN)
@@ -152,7 +159,7 @@ namespace Text_Parsers
                         Console.Out.Write(line);
                         if (line.Contains("SB0P"))
                         {
-                            System.Diagnostics.Process.Start('"' + FPN_audio_player + '"' + " " + '"' + "Y:\\PixelTrope2022\\Resources\\Audio\\MxO_Emu\\MxO_Edits\\Soundboards\\Agent Gray\\I_Am_Agent_Gray.wav" + '"');
+                            onexit = SHELL2OS("\"" + FPN_audio_player + "\" \"Y:\\PixelTrope2022\\Resources\\Audio\\MxO_Emu\\MxO_Edits\\Soundboards\\Agent Gray\\I_Am_Agent_Gray.wav\"");
                         }
                         if (line.Contains("!Exit!"))
                         {
@@ -169,6 +176,20 @@ namespace Text_Parsers
             Console.WriteLine("{0} {1} {2} {3} {4} {5} {6}", FP_log_in, FPN_log_out, FN_log_in, line_control, read_delay, act_delay, wait_delay);
             Console.WriteLine("Log In: {0}\nLog Out: {1}", FPN_log_in, FPN_log_out);
         }  // LOG OUT
+
+        public bool SHELL2OS(string OS)
+        {
+            System.Diagnostics.Process.Start(OS);
+            Console.WriteLine("Command {0} sent to shell.", OS);
+            return false;
+        } // SHELL2OS
+
+        public void BUILDSOUNDBOARD(string FPN)
+        {
+            foreach (string SE in)
+                Console.WriteLine(FEXISTS(FPN));
+            Console.WriteLine(DEXISTS(FPN));
+        }
 
     } //class
 } //namespace
